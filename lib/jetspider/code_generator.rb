@@ -338,8 +338,12 @@ module JetSpider
     def visit_NumberNode(n)
       if n.value == 1
         @asm.one
-      else
+      elsif -128 <= n.value and n.value < 128
         @asm.int8(n.value)
+      elsif -2147483648 <= n.value and n.value < 2147483648 
+        @asm.int32(n.value)
+      else
+        raise "NumberNode value is too big..."
       end
     end
 
