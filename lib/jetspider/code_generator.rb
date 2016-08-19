@@ -277,6 +277,10 @@ module JetSpider
 
     def visit_PostfixNode(n)
       raise "'#{n.value}' is not supported..." if n.value != "++"
+      if n.operand.class == RKelly::Nodes::DotAccessorNode
+        prop_inc(n.operand)
+        return
+      end
       operand = n.operand
       if operand.variable.global?
         global_inc(n)
@@ -330,7 +334,8 @@ module JetSpider
     end
 
     def visit_DotAccessorNode(n)
-      raise NotImplementedError, 'DotAccessorNode'
+      visit n.value
+      @asm.getprop(n.accessor)
     end
 
     def visit_BracketAccessorNode(n)
@@ -410,6 +415,10 @@ module JetSpider
     end
 
     def setvar(n, &blk)
+      if n.class == RKelly::Nodes::DotAccessorNode
+        setprop(n) { blk.call if blk }
+        return
+      end
       var = n.variable
       case
       when var.parameter?
@@ -425,6 +434,12 @@ module JetSpider
       else
         raise "[FATAL] unsupported variable type for dereference: #{var.inspect}"
       end
+    end
+
+    def setprop(n, &blk)
+      visit n.value
+      blk.call if blk
+      @asm.setprop n.accessor
     end
 
     def global_inc(n)
@@ -444,6 +459,17 @@ module JetSpider
       @asm.add
       setvar(n.operand)
       @asm.pop
+    end
+
+    def prop_inc(n)
+      visit n.value
+      @asm.dup
+      @asm.getprop n.accessor
+      @asm.one
+      @asm.add
+      @asm.setprop n.accessor
+      @asm.one
+      @asm.sub
     end
   end
 end
