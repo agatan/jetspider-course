@@ -207,7 +207,7 @@ module JetSpider
     end
 
     def visit_ContinueNode(n)
-      raise NotImplementedError, 'ContinueNode'
+      @asm.goto @loop_locations.last[:loop]
     end
 
     def visit_SwitchNode(n) raise "SwitchNode not implemented"; end
