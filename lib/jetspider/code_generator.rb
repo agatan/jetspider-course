@@ -287,7 +287,14 @@ module JetSpider
     end
 
     def visit_PostfixNode(n)
-      raise "PostfixNode not implemented"
+      raise "'#{n.value}' is not supported..." if n.value != "++"
+      operand = n.operand.variable
+      @asm.getlocal(operand.index)
+      @asm.getlocal(operand.index)
+      @asm.one
+      @asm.add
+      @asm.setlocal(operand.index)
+      @asm.pop
     end
 
     def visit_BitwiseNotNode(n) raise "BitwiseNotNode not implemented"; end
