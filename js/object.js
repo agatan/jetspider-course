@@ -1,0 +1,3 @@
+function MyObject() { }
+
+new MyObject();
