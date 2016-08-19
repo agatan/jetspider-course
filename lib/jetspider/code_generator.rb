@@ -389,7 +389,16 @@ module JetSpider
       @asm.string(eval(n.value))
     end
 
-    def visit_ArrayNode(n) raise "ArrayNode not implemented"; end
+    def visit_ArrayNode(n)
+      @asm.newarray(n.value.count)
+      n.value.each_with_index do |elem, idx|
+        visit RKelly::Nodes::NumberNode.new(idx)
+        visit elem.value
+        @asm.initelem
+      end
+      @asm.endinit
+    end
+
     def visit_ElementNode(n) raise "ElementNode not implemented"; end
 
     def visit_RegexpNode(n) raise "RegexpNode not implemented"; end

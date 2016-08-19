@@ -174,6 +174,10 @@ module JetSpider
       put_insn 'callprop', get_atom_id(name)
     end
 
+    def newarray(length)
+      put_insn 'newarray', ObjectFile.uint24(length)
+    end
+
   end
 
 end
