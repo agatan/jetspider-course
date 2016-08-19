@@ -230,13 +230,25 @@ module JetSpider
       visit n.value
     end
 
-    def visit_AddNode(n)
-      if n.left.class == RKelly::Nodes::NumberNode and n.value.class == RKelly::Nodes::NumberNode
-        visit RKelly::Nodes::NumberNode.new(n.left.value + n.value.value)
+    def constant_fold(node)
+      return node if node.class != RKelly::Nodes::AddNode
+      lhs = constant_fold node.left
+      rhs = constant_fold node.value
+      if lhs.class == RKelly::Nodes::NumberNode and rhs.class == RKelly::Nodes::NumberNode
+        RKelly::Nodes::NumberNode.new(lhs.value + rhs.value)
       else
+        RKelly::Nodes::AddNode.new(lhs, rhs)
+      end
+    end
+
+    def visit_AddNode(n)
+      n = constant_fold n
+      if n.class == RKelly::Nodes::AddNode
         visit n.left
         visit n.value
         @asm.add
+      else
+        visit n
       end
     end
 
