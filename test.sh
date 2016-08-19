@@ -10,6 +10,10 @@ do
         echo $js : skip...
         continue
     fi
+    if [[ "$js" =~ "anon" ]]; then
+        echo $js : skip...
+        continue
+    fi
     echo $js
     ./bin/jetspider $js
     ./bin/jsvm ${js}c
