@@ -115,22 +115,12 @@ module JetSpider
     #
 
     def visit_ResolveNode(n)
-      var = n.variable
-      case
-      when var.parameter?
-        @asm.getarg var.index
-      when var.local?
-        @asm.getlocal var.index
-      when var.global?
-        @asm.getgname var.name
-      else
-        raise "[FATAL] unsupported variable type for dereference: #{var.inspect}"
-      end
+      getvar(n)
     end
 
     def visit_OpEqualNode(n)
       visit n.value
-      @asm.setlocal n.left.variable.index
+      setvar(n.left)
     end
 
     def visit_VarStatementNode(n)
@@ -141,7 +131,7 @@ module JetSpider
 
     def visit_VarDeclNode(n)
       visit n.value.value
-      @asm.setlocal n.variable.index
+      setvar(n)
     end
 
     def visit_AssignExprNode(n)
@@ -288,12 +278,11 @@ module JetSpider
 
     def visit_PostfixNode(n)
       raise "'#{n.value}' is not supported..." if n.value != "++"
-      operand = n.operand.variable
-      @asm.getlocal(operand.index)
-      @asm.getlocal(operand.index)
+      getvar(n.operand)
+      getvar(n.operand)
       @asm.one
       @asm.add
-      @asm.setlocal(operand.index)
+      setvar(n.operand)
       @asm.pop
     end
 
@@ -397,5 +386,34 @@ module JetSpider
     def visit_ObjectLiteralNode(n) raise "ObjectLiteralNode not implemented"; end
 
     def visit_VoidNode(n) raise "VoidNode not implemented"; end
+
+  private
+    def getvar(n)
+      var = n.variable
+      case
+      when var.parameter?
+        @asm.getarg var.index
+      when var.local?
+        @asm.getlocal var.index
+      when var.global?
+        @asm.getgname var.name
+      else
+        raise "[FATAL] unsupported variable type for dereference: #{var.inspect}"
+      end
+    end
+
+    def setvar(n)
+      var = n.variable
+      case
+      when var.parameter?
+        @asm.setarg var.index
+      when var.local?
+        @asm.setlocal var.index
+      when var.global?
+        @asm.setgname var.name
+      else
+        raise "[FATAL] unsupported variable type for dereference: #{var.inspect}"
+      end
+    end
   end
 end

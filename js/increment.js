@@ -1,3 +1,5 @@
+var global = 2;
+
 function f() {
     var x = 0;
     p(x++);
@@ -5,3 +7,5 @@ function f() {
 }
 
 f();
+p(global++);
+p(global);
