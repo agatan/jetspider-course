@@ -220,10 +220,13 @@ module JetSpider
     end
 
     def visit_AddNode(n)
-      visit n.left
-      visit n.value
-      @asm.add
-      # raise NotImplementedError, 'AddNode'
+      if n.left.class == RKelly::Nodes::NumberNode and n.value.class == RKelly::Nodes::NumberNode
+        visit RKelly::Nodes::NumberNode.new(n.left.value + n.value.value)
+      else
+        visit n.left
+        visit n.value
+        @asm.add
+      end
     end
 
     def visit_SubtractNode(n)
