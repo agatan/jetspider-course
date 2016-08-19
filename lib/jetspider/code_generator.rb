@@ -328,7 +328,10 @@ module JetSpider
     simple_binary_op 'LogicalAndNode', :and
     simple_binary_op 'LogicalOrNode', :or
 
-    def visit_LogicalNotNode(n) raise "LogicalNotNode not implemented"; end
+    def visit_LogicalNotNode(n)
+      visit n.value
+      @asm.not
+    end
 
     #
     # Object-related
