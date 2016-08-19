@@ -367,6 +367,10 @@ module JetSpider
         @asm.one
       elsif -128 <= n.value and n.value < 128
         @asm.int8(n.value)
+      elsif 0 <= n.value and n.value < 65536
+        @asm.uint16(n.value)
+      elsif 0 <= n.value and n.value < 16777216
+        @asm.uint24(n.value)
       elsif -2147483648 <= n.value and n.value < 2147483648 
         @asm.int32(n.value)
       else
