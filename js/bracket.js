@@ -6,4 +6,7 @@ function Class(x) {
 }
 
 var y = new Class(2);
-p(y['index']);
+var accessor = 'index';
+p(y[accessor]);
+p(y[accessor]++);
+p(y[accessor]);

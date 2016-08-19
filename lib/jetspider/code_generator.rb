@@ -290,6 +290,9 @@ module JetSpider
       if n.operand.class == RKelly::Nodes::DotAccessorNode
         prop_inc(n.operand)
         return
+      elsif n.operand.class == RKelly::Nodes::BracketAccessorNode
+        bracket_inc(n.operand)
+        return
       end
       operand = n.operand
       if operand.variable.global?
@@ -494,6 +497,12 @@ module JetSpider
       @asm.setprop n.accessor
       @asm.one
       @asm.sub
+    end
+
+    def bracket_inc(n)
+      visit n.value
+      visit n.accessor
+      @asm.eleminc
     end
   end
 end
