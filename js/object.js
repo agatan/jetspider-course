@@ -12,3 +12,10 @@ p(second.index);
 p("increment...");
 p(first.index++);
 p(first.index);
+
+function f() {
+    return one;
+}
+
+first.m = f;
+p(first.m());

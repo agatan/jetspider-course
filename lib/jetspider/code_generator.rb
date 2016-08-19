@@ -83,7 +83,12 @@ module JetSpider
     #
 
     def visit_FunctionCallNode(n)
-      @asm.callgname(n.value.value)
+      if n.value.class == RKelly::Nodes::DotAccessorNode
+        visit n.value.value
+        @asm.callprop(n.value.accessor)
+      else
+        @asm.callgname(n.value.value)
+      end
       n.arguments.value.each do |arg|
         visit arg
       end
