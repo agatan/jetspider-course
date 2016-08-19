@@ -352,7 +352,9 @@ module JetSpider
     end
 
     def visit_BracketAccessorNode(n)
-      raise NotImplementedError, 'BracketAccessorNode'
+      visit n.value
+      visit n.accessor
+      @asm.getelem
     end
 
     def visit_InstanceOfNode(n) raise "InstanceOfNode not implemented"; end
