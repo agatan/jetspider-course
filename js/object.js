@@ -19,3 +19,9 @@ function f() {
 
 first.m = f;
 p(first.m());
+
+function g() {
+    return this.index;
+}
+first.g = g;
+p(first.g());
