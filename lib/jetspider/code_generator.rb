@@ -6,6 +6,7 @@ module JetSpider
     def initialize(object_file)
       @object_file = object_file
       @asm = nil
+      @loop_locations = []
     end
 
     def generate_object_file(ast)
@@ -182,6 +183,7 @@ module JetSpider
     def visit_WhileNode(n)
       exit_loc = @asm.lazy_location
       loop_loc = @asm.location
+      @loop_locations.push({loop: loop_loc, exit: exit_loc})
       visit n.left
       @asm.ifeq exit_loc
       n.value.value.value.each do |s|
@@ -189,6 +191,7 @@ module JetSpider
       end
       @asm.goto loop_loc
       @asm.fix_location(exit_loc)
+      @loop_locations.pop
     end
 
     def visit_DoWhileNode(n)
@@ -200,7 +203,7 @@ module JetSpider
     end
 
     def visit_BreakNode(n)
-      raise NotImplementedError, 'BreakNode'
+      @asm.goto @loop_locations.last[:exit]
     end
 
     def visit_ContinueNode(n)
