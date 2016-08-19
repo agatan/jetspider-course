@@ -120,7 +120,7 @@ module JetSpider
       when var.parameter?
         @asm.getarg var.index
       when var.local?
-        raise NotImplementedError, 'ResolveNode - local'
+        @asm.getlocal var.index
       when var.global?
         @asm.getgname var.name
       else
@@ -133,11 +133,14 @@ module JetSpider
     end
 
     def visit_VarStatementNode(n)
-      raise NotImplementedError, 'VarStatementNode'
+      n.value.each do |decl|
+        visit decl
+      end
     end
 
     def visit_VarDeclNode(n)
-      raise NotImplementedError, 'VarDeclNode'
+      visit n.value.value
+      @asm.setlocal n.variable.index
     end
 
     def visit_AssignExprNode(n)
