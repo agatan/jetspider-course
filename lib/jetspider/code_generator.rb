@@ -211,7 +211,21 @@ module JetSpider
     end
 
     def visit_ForNode(n)
-      raise NotImplementedError, 'ForNode'
+      visit n.init
+      body_loc = @asm.lazy_location
+      @asm.goto body_loc
+      loop_loc = @asm.location
+      visit n.counter
+      @asm.pop
+      exit_loc = @asm.lazy_location
+      @loop_locations.push({loop: loop_loc, exit: exit_loc})
+      @asm.fix_location body_loc
+      visit n.test
+      @asm.ifeq exit_loc
+      visit n.value
+      @asm.goto loop_loc
+      @asm.fix_location exit_loc
+      @loop_locations.pop
     end
 
     def visit_BreakNode(n)
