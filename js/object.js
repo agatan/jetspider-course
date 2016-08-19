@@ -1,3 +1,5 @@
-function MyObject() { }
+function MyObject(i) {
+    this.index = i;
+}
 
-new MyObject();
+new MyObject().index++;

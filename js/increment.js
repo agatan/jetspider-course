@@ -1,11 +1,20 @@
-var global = 2;
-
-function f() {
+function l() {
     var x = 0;
+    p("LOCAL");
     p(x++);
     p(x);
 }
+l();
 
-f();
+var global = 2;
+p("GLOBAL");
 p(global++);
 p(global);
+
+function param(x) {
+    p("PARAMETER");
+    p(x++);
+    p(x);
+}
+param(4);
+

@@ -119,8 +119,7 @@ module JetSpider
     end
 
     def visit_OpEqualNode(n)
-      visit n.value
-      setvar(n.left)
+      setvar(n.left) { visit n.value }
     end
 
     def visit_VarStatementNode(n)
@@ -130,8 +129,8 @@ module JetSpider
     end
 
     def visit_VarDeclNode(n)
-      visit n.value.value
-      setvar(n)
+      setvar(n) { visit n.value.value }
+      @asm.pop
     end
 
     def visit_AssignExprNode(n)
@@ -278,12 +277,14 @@ module JetSpider
 
     def visit_PostfixNode(n)
       raise "'#{n.value}' is not supported..." if n.value != "++"
-      getvar(n.operand)
-      getvar(n.operand)
-      @asm.one
-      @asm.add
-      setvar(n.operand)
-      @asm.pop
+      operand = n.operand
+      if operand.variable.global?
+        global_inc(n)
+      elsif operand.variable.local? or operand.variable.parameter?
+        variable_inc(n)
+      else
+        raise "attribute is not supported yet..."
+      end
     end
 
     def visit_BitwiseNotNode(n) raise "BitwiseNotNode not implemented"; end
@@ -401,24 +402,48 @@ module JetSpider
       when var.local?
         @asm.getlocal var.index
       when var.global?
+        # @asm.bindgname var.name
         @asm.getgname var.name
       else
         raise "[FATAL] unsupported variable type for dereference: #{var.inspect}"
       end
     end
 
-    def setvar(n)
+    def setvar(n, &blk)
       var = n.variable
       case
       when var.parameter?
+        blk.call if blk
         @asm.setarg var.index
       when var.local?
+        blk.call if blk
         @asm.setlocal var.index
       when var.global?
+        @asm.bindgname var.name
+        blk.call if blk
         @asm.setgname var.name
       else
         raise "[FATAL] unsupported variable type for dereference: #{var.inspect}"
       end
+    end
+
+    def global_inc(n)
+      getvar(n.operand)
+      @asm.bindgname(n.operand.variable.name)
+      getvar(n.operand)
+      @asm.one
+      @asm.add
+      @asm.setgname(n.operand.variable.name)
+      @asm.pop
+    end
+    
+    def variable_inc(n)
+      getvar(n.operand)
+      getvar(n.operand)
+      @asm.one
+      @asm.add
+      setvar(n.operand)
+      @asm.pop
     end
   end
 end
