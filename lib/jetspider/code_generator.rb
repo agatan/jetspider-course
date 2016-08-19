@@ -86,6 +86,10 @@ module JetSpider
       if n.value.class == RKelly::Nodes::DotAccessorNode
         visit n.value.value
         @asm.callprop(n.value.accessor)
+      elsif n.value.class == RKelly::Nodes::BracketAccessorNode
+        visit n.value.value
+        visit n.value.accessor
+        @asm.callelem
       else
         @asm.callgname(n.value.value)
       end
