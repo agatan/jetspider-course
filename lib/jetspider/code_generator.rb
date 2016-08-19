@@ -129,7 +129,8 @@ module JetSpider
     end
 
     def visit_OpEqualNode(n)
-      raise NotImplementedError, 'OpEqualNode'
+      visit n.value
+      @asm.setlocal n.left.variable.index
     end
 
     def visit_VarStatementNode(n)
