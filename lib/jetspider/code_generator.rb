@@ -348,7 +348,7 @@ module JetSpider
     end
 
     def visit_StringNode(n)
-      raise NotImplementedError, 'StringNode'
+      @asm.string n.value
     end
 
     def visit_ArrayNode(n) raise "ArrayNode not implemented"; end
