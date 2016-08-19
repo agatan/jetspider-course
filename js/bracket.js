@@ -10,3 +10,7 @@ var accessor = 'index';
 p(y[accessor]);
 p(y[accessor]++);
 p(y[accessor]);
+
+y[accessor] = one;
+p(y[accessor]);
+p(y.index);

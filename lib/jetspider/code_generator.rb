@@ -445,6 +445,9 @@ module JetSpider
       if n.class == RKelly::Nodes::DotAccessorNode
         setprop(n) { blk.call if blk }
         return
+      elsif n.class == RKelly::Nodes::BracketAccessorNode
+        setelem(n) { blk.call if blk }
+        return
       end
       var = n.variable
       case
@@ -467,6 +470,13 @@ module JetSpider
       visit n.value
       blk.call if blk
       @asm.setprop n.accessor
+    end
+
+    def setelem(n, &blk)
+      visit n.value
+      visit n.accessor
+      blk.call if blk
+      @asm.setelem
     end
 
     def global_inc(n)
